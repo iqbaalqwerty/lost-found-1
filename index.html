@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lost and Found</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#F5F5F5;--white:#fff;--border:#E0E0E0;--border2:#BDBDBD;
+  --text:#212121;--text2:#757575;--text3:#9E9E9E;
+  --purple:#6200EE;--purple2:#EDE7F6;--purple3:#9C6FF7;
+  --red:#C62828;--red2:#FFEBEE;--green:#2E7D32;--green2:#E8F5E9;
+  --blue:#1565C0;--blue2:#E3F2FD;--amber:#F57F17;--amber2:#FFF8E1;
+  --radius:8px;--radius-lg:12px;--radius-xl:16px;
+  --font:'Segoe UI',system-ui,sans-serif;
+}
+body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;overflow-x:hidden}
+
+/* HEADER */
+header{background:var(--purple);padding:10px 12px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;gap:8px}
+.logo{display:flex;align-items:center;gap:6px;color:#fff;flex-shrink:0;min-width:0}
+.logo-icon{width:28px;height:28px;background:rgba(255,255,255,0.2);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.logo-text{font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hstats{display:flex;gap:5px;flex-shrink:0}
+.hstat{background:rgba(255,255,255,0.15);border-radius:8px;padding:3px 8px;text-align:center}
+.hstat-n{font-size:14px;font-weight:700;color:#fff}
+.hstat-l{font-size:8px;color:rgba(255,255,255,0.75)}
+.btn-lapor{background:#fff;color:var(--purple);border:none;border-radius:var(--radius);padding:7px 12px;font-family:var(--font);font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:4px;white-space:nowrap;flex-shrink:0}
+
+/* PUBLIC VIEW */
+.search-wrap{background:#fff;border-bottom:1px solid var(--border);padding:10px 14px}
+.search-box{display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:8px 12px;margin-bottom:8px}
+.search-box input{flex:1;border:none;background:transparent;color:var(--text);font-family:var(--font);font-size:14px;outline:none}
+.search-box input::placeholder{color:var(--text3)}
+.pills{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px}
+.pills::-webkit-scrollbar{display:none}
+.pill{padding:5px 14px;border-radius:16px;font-size:12px;font-weight:600;white-space:nowrap;border:1.5px solid var(--border);color:var(--text2);background:#fff;cursor:pointer;flex-shrink:0}
+.pill.on{background:var(--purple2);color:var(--purple);border-color:var(--purple3)}
+.main{max-width:900px;margin:0 auto;padding:14px 14px 80px}
+.count{font-size:12px;color:var(--text3);margin-bottom:10px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.card{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;transition:all 0.2s}
+.card:hover{border-color:var(--border2)}
+.card-img{width:100%;height:180px;object-fit:cover;display:block;background:var(--purple2);cursor:zoom-in}
+.card-no-img{width:100%;height:130px;background:var(--purple2);display:flex;align-items:center;justify-content:center}
+.card-stripe{height:3px}
+.card-stripe.lost{background:var(--red)}
+.card-stripe.found{background:var(--green)}
+.card-stripe.selesai{background:var(--purple)}
+.card-body{padding:12px}
+.card-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.badge{font-size:10px;padding:3px 8px;border-radius:4px;font-weight:600;display:flex;align-items:center;gap:3px}
+.badge.lost{background:var(--red2);color:var(--red)}
+.badge.found{background:var(--green2);color:var(--green)}
+.badge.selesai{background:var(--purple2);color:var(--purple)}
+.card-date{font-size:11px;color:var(--text3)}
+.card-name{font-size:15px;font-weight:600;color:var(--text);margin-bottom:3px}
+.card-desc{font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:6px}
+.card-loc{font-size:11px;color:var(--text3);display:flex;align-items:center;gap:4px;margin-bottom:2px}
+.card-contact{font-size:11px;color:var(--text2);display:flex;align-items:center;gap:4px;margin-bottom:10px}
+.card-actions{display:flex;gap:6px;flex-wrap:wrap}
+.btn-wa{display:flex;align-items:center;gap:5px;background:var(--green2);color:var(--green);border:1px solid #A5D6A7;border-radius:var(--radius);padding:6px 10px;font-size:11px;font-weight:600;cursor:pointer;text-decoration:none;font-family:var(--font)}
+.btn-email{display:flex;align-items:center;gap:5px;background:var(--blue2);color:var(--blue);border:1px solid #90CAF9;border-radius:var(--radius);padding:6px 10px;font-size:11px;font-weight:600;cursor:pointer;text-decoration:none;font-family:var(--font)}
+.btn-done{display:flex;align-items:center;gap:5px;background:var(--purple2);color:var(--purple);border:1px solid var(--purple3);border-radius:var(--radius);padding:6px 10px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font)}
+.empty{text-align:center;padding:60px 20px;color:var(--text3);grid-column:1/-1}
+.loading{text-align:center;padding:60px 20px;color:var(--text2);grid-column:1/-1}
+.dots{display:flex;justify-content:center;gap:8px;margin-bottom:14px}
+.dot{width:10px;height:10px;border-radius:50%;animation:bounce 1.2s ease-in-out infinite}
+.dot:nth-child(1){background:var(--purple)}
+.dot:nth-child(2){background:#7C3AED;animation-delay:0.2s}
+.dot:nth-child(3){background:var(--purple3);animation-delay:0.4s}
+@keyframes bounce{0%,80%,100%{transform:scale(0.6)}40%{transform:scale(1)}}
+
+/* ADMIN VIEW */
+#adminView{display:none}
+.admin-header{background:#1a1a2e;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;gap:8px;flex-wrap:wrap}
+.admin-logo{display:flex;align-items:center;gap:10px;color:#fff}
+.admin-logo-badge{background:#F57F17;color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;letter-spacing:0.5px}
+.admin-nav{display:flex;gap:4px}
+.admin-nav-btn{background:transparent;border:none;color:rgba(255,255,255,0.7);padding:8px 14px;border-radius:var(--radius);cursor:pointer;font-family:var(--font);font-size:13px;font-weight:500;display:flex;align-items:center;gap:6px;transition:all 0.15s}
+.admin-nav-btn.on{background:rgba(255,255,255,0.15);color:#fff}
+.admin-nav-btn:hover{background:rgba(255,255,255,0.1);color:#fff}
+.admin-logout{background:rgba(198,40,40,0.2);border:1px solid rgba(198,40,40,0.4);color:#FF8A80;padding:7px 14px;border-radius:var(--radius);cursor:pointer;font-family:var(--font);font-size:12px;font-weight:600;display:flex;align-items:center;gap:5px}
+.admin-card-list{display:flex;flex-direction:column;gap:10px;padding:14px}
+.admin-card-item{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);padding:12px;display:flex;gap:12px;align-items:flex-start}
+.admin-card-img{width:60px;height:60px;object-fit:cover;border-radius:8px;flex-shrink:0;background:var(--purple2)}
+.admin-card-img-ph{width:60px;height:60px;border-radius:8px;flex-shrink:0;background:var(--purple2);display:flex;align-items:center;justify-content:center}
+.admin-card-info{flex:1;min-width:0}
+.admin-card-name{font-size:14px;font-weight:600;color:var(--text);margin-bottom:3px}
+.admin-card-sub{font-size:11px;color:var(--text3);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.admin-card-actions{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.admin-content{max-width:1100px;margin:0 auto;padding:20px 16px 80px}
+@media(min-width:601px){.admin-card-list{display:none !important}}
+
+/* ADMIN STATS */
+.admin-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+.astat{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;display:flex;align-items:center;gap:14px}
+.astat-icon{width:44px;height:44px;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.astat-num{font-size:24px;font-weight:700}
+.astat-label{font-size:12px;color:var(--text2);margin-top:2px}
+
+/* ADMIN TABLE */
+.admin-section{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:16px}
+.admin-section-header{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.admin-section-title{font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px}
+.admin-toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.admin-search{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:7px 12px;color:var(--text);font-family:var(--font);font-size:13px;outline:none;width:200px}
+.admin-filter{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:7px 10px;color:var(--text2);font-family:var(--font);font-size:12px;cursor:pointer;outline:none}
+.btn-danger-sm{background:var(--red2);color:var(--red);border:1px solid #FFCDD2;border-radius:var(--radius);padding:7px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);display:flex;align-items:center;gap:5px}
+
+/* TABLE */
+.atable{width:100%;border-collapse:collapse}
+.atable th{background:#FAFAFA;padding:10px 14px;font-size:11px;font-weight:600;color:var(--text2);text-align:left;border-bottom:1px solid var(--border);letter-spacing:0.3px;text-transform:uppercase}
+.atable td{padding:10px 14px;font-size:13px;border-bottom:1px solid var(--border);vertical-align:middle}
+.atable tr:last-child td{border-bottom:none}
+.atable tr:hover td{background:#FAFAFA}
+.tbl-img{width:48px;height:48px;object-fit:cover;border-radius:6px;background:var(--purple2);cursor:zoom-in}
+.tbl-img-placeholder{width:48px;height:48px;border-radius:6px;background:var(--purple2);display:flex;align-items:center;justify-content:center}
+.tbl-actions{display:flex;gap:6px}
+.btn-edit-sm{background:var(--amber2);color:var(--amber);border:1px solid #FFE082;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font);display:flex;align-items:center;gap:4px}
+.btn-del-sm{background:var(--red2);color:var(--red);border:1px solid #FFCDD2;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font);display:flex;align-items:center;gap:4px}
+.tbl-name{font-weight:600;color:var(--text)}
+.tbl-sub{font-size:11px;color:var(--text3);margin-top:2px}
+
+/* MESSAGES */
+.msg-list{padding:14px;display:flex;flex-direction:column;gap:10px}
+.msg-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
+.msg-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.msg-name{font-size:13px;font-weight:600}
+.msg-time{font-size:11px;color:var(--text3)}
+.msg-text{font-size:13px;color:var(--text2);margin-bottom:10px;line-height:1.5}
+.msg-reply-box{background:var(--green2);border-radius:var(--radius);padding:8px 10px;font-size:12px;color:var(--green);margin-bottom:8px;display:flex;align-items:flex-start;gap:6px}
+.reply-input{width:100%;background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:7px 10px;color:var(--text);font-family:var(--font);font-size:13px;outline:none;margin-bottom:6px}
+.reply-input:focus{border-color:var(--green)}
+.msg-actions{display:flex;gap:6px}
+.btn-reply{background:var(--green2);color:var(--green);border:1px solid #A5D6A7;border-radius:var(--radius);padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);display:flex;align-items:center;gap:5px}
+.btn-del-msg{background:var(--red2);color:var(--red);border:1px solid #FFCDD2;border-radius:var(--radius);padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);display:flex;align-items:center;gap:5px}
+.unread-dot{width:8px;height:8px;background:var(--red);border-radius:50%;display:inline-block}
+
+/* SETTINGS */
+.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:16px}
+.setting-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.setting-title{font-size:13px;font-weight:600;margin-bottom:4px}
+.setting-sub{font-size:11px;color:var(--text3);margin-bottom:12px}
+.sfi{width:100%;background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:8px 10px;color:var(--text);font-family:var(--font);font-size:13px;outline:none;margin-bottom:8px}
+.sfi:focus{border-color:var(--purple)}
+.btn-setting{background:var(--purple);color:#fff;border:none;border-radius:var(--radius);padding:8px 16px;font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px}
+
+/* MODALS */
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:1000;align-items:center;justify-content:center}
+.modal.show{display:flex}
+.modal-img{max-width:92vw;max-height:92vh;object-fit:contain;border-radius:8px}
+.modal-close{position:fixed;top:14px;right:14px;background:rgba(255,255,255,0.15);color:#fff;border:none;border-radius:50%;width:38px;height:38px;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;align-items:flex-start;justify-content:center;padding:16px;overflow-y:auto}
+.overlay.show{display:flex}
+.ocard{background:#fff;border-radius:var(--radius-xl);padding:22px;width:100%;max-width:500px;margin:auto}
+.otitle{font-size:17px;font-weight:700;margin-bottom:3px}
+.osub{font-size:13px;color:var(--text2);margin-bottom:18px}
+.type-row{display:flex;gap:8px;margin-bottom:16px}
+.type-btn{flex:1;padding:10px;border-radius:var(--radius);border:2px solid var(--border);background:var(--bg);cursor:pointer;text-align:center;transition:all 0.15s}
+.type-btn.al{border-color:var(--red);background:var(--red2)}
+.type-btn.af{border-color:var(--green);background:var(--green2)}
+.type-btn-label{font-size:13px;font-weight:600;color:var(--text);margin-top:4px}
+.fg{margin-bottom:12px}
+.fl{font-size:11px;color:var(--text2);font-weight:600;letter-spacing:0.5px;text-transform:uppercase;display:block;margin-bottom:4px}
+.fi,.fta,.fse{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:9px 12px;color:var(--text);font-family:var(--font);font-size:14px;outline:none;transition:border-color 0.2s}
+.fi:focus,.fta:focus,.fse:focus{border-color:var(--purple)}
+.fi::placeholder,.fta::placeholder{color:var(--text3)}
+.fta{resize:vertical;min-height:75px;line-height:1.6}
+.fse{cursor:pointer}
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.upload-area{border:2px dashed var(--border);border-radius:var(--radius);padding:16px;text-align:center;cursor:pointer;background:var(--bg)}
+.upload-area input{display:none}
+.upload-prev{width:100%;height:140px;object-fit:contain;border-radius:var(--radius);margin-top:8px;background:var(--purple2)}
+.btn-sub{width:100%;padding:12px;background:var(--purple);color:#fff;border:none;border-radius:var(--radius);font-family:var(--font);font-size:14px;font-weight:600;cursor:pointer;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-sub:disabled{opacity:0.6;cursor:not-allowed}
+.btn-can{width:100%;padding:10px;background:transparent;color:var(--text2);border:1px solid var(--border);border-radius:var(--radius);font-family:var(--font);font-size:14px;cursor:pointer;margin-top:6px}
+
+/* CHAT FAB */
+
+
+/* BOT NAV */
+.bot-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border);z-index:100;padding:6px 0 8px;display:flex}
+.bot-nav-inner{display:flex;width:100%;max-width:500px;margin:0 auto}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:4px 0}
+.nav-label{font-size:10px;color:var(--text3);font-weight:500}
+.nav-item.on .nav-label{color:var(--purple);font-weight:600}
+
+.toast{position:fixed;bottom:72px;left:50%;transform:translateX(-50%) translateY(40px);background:#212121;color:#fff;padding:10px 18px;border-radius:var(--radius);font-size:13px;font-weight:500;z-index:3000;opacity:0;transition:all 0.3s;pointer-events:none;white-space:nowrap}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+footer{text-align:center;padding:14px;font-size:12px;color:var(--text3);border-top:1px solid var(--border)}
+footer span{color:var(--purple);font-weight:600}
+@media(min-width:601px){.bot-nav{display:none}.main{padding-bottom:20px}.admin-content{padding-bottom:20px}}
+@media(max-width:600px){
+  .grid{grid-template-columns:1fr}
+  .fg2{grid-template-columns:1fr}
+  .admin-stats{grid-template-columns:repeat(2,1fr)}
+  .settings-grid{grid-template-columns:1fr}
+  .atable{display:block;overflow-x:auto}
+  .main{padding-bottom:100px}
+  .admin-content{padding-bottom:100px}
+  footer{margin-bottom:70px}
+  .admin-header{flex-direction:column;align-items:flex-start;gap:8px}
+  .admin-nav{width:100%;overflow-x:auto}
+  .admin-nav-btn{padding:6px 10px;font-size:12px}
+  .admin-logo{font-size:14px}
+  .admin-logo-badge{font-size:9px}
+  .admin-logout{display:none}
+  .admin-stats{grid-template-columns:repeat(2,1fr);gap:8px}
+  .astat{padding:12px}
+  .astat-icon{width:36px;height:36px}
+  .astat-num{font-size:20px}
+  .atable{display:none !important}
+  .admin-card-list{display:flex !important}
+  .admin-section-header{flex-direction:column;align-items:flex-start;gap:8px}
+  .admin-toolbar{width:100%}
+  .admin-search{width:100%}
+  .hstats{display:none}
+  header{padding:8px 12px}
+  .logo-text{font-size:14px}
+  .btn-lapor{padding:7px 10px;font-size:12px}
+  .search-wrap{padding:8px 12px}
+  .ocard{padding:16px}
+  body{overflow-x:hidden}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== PUBLIC VIEW ===== -->
+<div id="publicView">
+<header>
+  <div class="logo">
+    <div class="logo-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg></div>
+    <div class="logo-text">Lost and Found</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px">
+    <div class="hstats">
+      <div class="hstat"><div class="hstat-n" id="cLost">-</div><div class="hstat-l">HILANG</div></div>
+      <div class="hstat"><div class="hstat-n" id="cFound">-</div><div class="hstat-l">TEMUAN</div></div>
+      <div class="hstat"><div class="hstat-n" id="cDone">-</div><div class="hstat-l">SELESAI</div></div>
+    </div>
+    <button class="btn-lapor" onclick="openForm()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+      Lapor Barang
+    </button>
+  </div>
+</header>
+<div class="search-wrap">
+  <div class="search-box">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="#9E9E9E"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+    <input id="searchInput" placeholder="Cari nama barang, lokasi..." oninput="filterItems()">
+  </div>
+  <div class="pills">
+    <span class="pill on" onclick="filterPill(this,'')">Semua</span>
+    <span class="pill" onclick="filterPill(this,'Hilang')">Hilang</span>
+    <span class="pill" onclick="filterPill(this,'Ditemukan')">Ditemukan</span>
+    <span class="pill" onclick="filterPill(this,'Selesai')">Selesai</span>
+  </div>
+</div>
+<div class="main">
+  <div class="count" id="countText"></div>
+  <div class="grid" id="grid">
+    <div class="loading"><div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div><div>Memuat data...</div></div>
+  </div>
+</div>
+<footer>© 2026 <span>Joksus</span> · All Rights Reserved · <span style="cursor:pointer;text-decoration:underline" onclick="openHubungi()">Hubungi Admin</span> · <span style="cursor:pointer;text-decoration:underline" onclick="openAdminLogin()">Admin Login</span></footer>
+<div class="bot-nav">
+  <div class="bot-nav-inner">
+    <div class="nav-item on" onclick="document.getElementById('searchInput').blur();filterPill(document.querySelector('.pill'),'')">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="#6200EE"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+      <div class="nav-label" style="color:#6200EE">Beranda</div>
+    </div>
+    <div class="nav-item" onclick="openForm()">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="#9E9E9E"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+      <div class="nav-label">Lapor</div>
+    </div>
+    <div class="nav-item" onclick="openHubungi()">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="#9E9E9E"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>
+      <div class="nav-label">Hubungi</div>
+    </div>
+    <div class="nav-item" onclick="openAdminLogin()">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="#9E9E9E"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+      <div class="nav-label">Admin</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ===== ADMIN VIEW ===== -->
+<div id="adminView">
+<div class="admin-header">
+  <div class="admin-logo">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
+    <span style="color:#fff;font-size:16px;font-weight:700">Dashboard Admin</span>
+    <span class="admin-logo-badge">ADMIN</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px">
+    <div class="admin-nav">
+      <button class="admin-nav-btn on" id="tabLaporan" onclick="switchAdminTab('laporan')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+        Laporan
+      </button>
+      <button class="admin-nav-btn" id="tabPesan" onclick="switchAdminTab('pesan')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+        Pesan <span id="pesanCount" style="background:#C62828;color:#fff;border-radius:10px;padding:1px 6px;font-size:10px;margin-left:2px;display:none">0</span>
+      </button>
+      <button class="admin-nav-btn" id="tabSettings" onclick="switchAdminTab('settings')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+        Pengaturan
+      </button>
+    </div>
+    <button class="admin-logout" onclick="logoutAdmin()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+      Keluar
+    </button>
+  </div>
+</div>
+
+<div class="admin-content">
+  <!-- STATS -->
+  <div class="admin-stats" id="adminStats">
+    <div class="astat"><div class="astat-icon" style="background:var(--red2)"><svg width="22" height="22" viewBox="0 0 24 24" fill="#C62828"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg></div><div><div class="astat-num" id="aLost" style="color:var(--red)">-</div><div class="astat-label">Barang Hilang</div></div></div>
+    <div class="astat"><div class="astat-icon" style="background:var(--green2)"><svg width="22" height="22" viewBox="0 0 24 24" fill="#2E7D32"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div><div><div class="astat-num" id="aFound" style="color:var(--green)">-</div><div class="astat-label">Barang Ditemukan</div></div></div>
+    <div class="astat"><div class="astat-icon" style="background:var(--purple2)"><svg width="22" height="22" viewBox="0 0 24 24" fill="#6200EE"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg></div><div><div class="astat-num" id="aSelesai" style="color:var(--purple)">-</div><div class="astat-label">Selesai</div></div></div>
+    <div class="astat"><div class="astat-icon" style="background:var(--amber2)"><svg width="22" height="22" viewBox="0 0 24 24" fill="#F57F17"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg></div><div><div class="astat-num" id="aPesan" style="color:var(--amber)">-</div><div class="astat-label">Pesan Masuk</div></div></div>
+  </div>
+
+  <!-- TAB LAPORAN -->
+  <div id="tabLaporanContent">
+    <div class="admin-section">
+      <div class="admin-section-header">
+        <div class="admin-section-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--purple)"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+          Semua Laporan
+        </div>
+        <div class="admin-toolbar">
+          <input class="admin-search" id="adminSearch" placeholder="Cari..." oninput="renderAdminTable()">
+          <select class="admin-filter" id="adminFilter" onchange="renderAdminTable()">
+            <option value="">Semua</option>
+            <option value="Hilang">Hilang</option>
+            <option value="Ditemukan">Ditemukan</option>
+            <option value="Selesai">Selesai</option>
+          </select>
+          <button class="btn-danger-sm" onclick="hapusSelesai()">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+            Hapus Semua Selesai
+          </button>
+        </div>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="atable">
+          <thead><tr><th>Foto</th><th>Nama Barang</th><th>Status</th><th>Lokasi</th><th>Pelapor</th><th>Tanggal</th><th>Aksi</th></tr></thead>
+          <tbody id="adminTableBody"></tbody>
+        </table>
+      </div>
+      <div class="admin-card-list" id="adminCardList"></div>
+    </div>
+  </div>
+
+  <!-- TAB PESAN -->
+  <div id="tabPesanContent" style="display:none">
+    <div class="admin-section">
+      <div class="admin-section-header">
+        <div class="admin-section-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--blue)"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+          Pesan dari Pengguna
+        </div>
+        <button class="btn-danger-sm" onclick="hapusSemuaPesan()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+          Hapus Semua Pesan
+        </button>
+      </div>
+      <div class="msg-list" id="adminMsgList">
+        <div class="empty">Belum ada pesan masuk</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB SETTINGS -->
+  <div id="tabSettingsContent" style="display:none">
+    <div class="admin-section">
+      <div class="admin-section-header">
+        <div class="admin-section-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--amber)"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+          Pengaturan
+        </div>
+      </div>
+      <div class="settings-grid">
+        <div class="setting-card">
+          <div class="setting-title">Ganti Password Admin</div>
+          <div class="setting-sub">Ubah password untuk masuk ke mode admin</div>
+          <input class="sfi" id="passLama" type="password" placeholder="Password saat ini">
+          <input class="sfi" id="passBaru" type="password" placeholder="Password baru">
+          <input class="sfi" id="passKonfirm" type="password" placeholder="Ulangi password baru">
+          <button class="btn-setting" onclick="doChangePass()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm0 16H7v-2h10v2zm0-4H7v-2h10v2zm-3-5V3.5L18.5 9H14z"/></svg>
+            Simpan Password
+          </button>
+        </div>
+        <div class="setting-card">
+          <div class="setting-title">Hapus Data</div>
+          <div class="setting-sub">Hapus laporan yang sudah selesai dari database</div>
+          <button class="btn-setting" style="background:var(--red);margin-bottom:8px;width:100%;justify-content:center" onclick="hapusSelesai()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+            Hapus Semua yang Selesai
+          </button>
+          <div style="font-size:11px;color:var(--text3)">Untuk hapus individual, gunakan tombol Hapus di tab Laporan</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="bot-nav">
+  <div class="bot-nav-inner">
+    <div class="nav-item on" onclick="switchAdminTab('laporan')">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="#6200EE"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+      <div class="nav-label" style="color:#6200EE">Laporan</div>
+    </div>
+    <div class="nav-item" onclick="switchAdminTab('pesan')">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="#9E9E9E"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+      <div class="nav-label">Pesan</div>
+    </div>
+    <div class="nav-item" onclick="switchAdminTab('settings')">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="#9E9E9E"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+      <div class="nav-label">Pengaturan</div>
+    </div>
+    <div class="nav-item" onclick="logoutAdmin()">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="#9E9E9E"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+      <div class="nav-label">Keluar</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- PHOTO MODAL -->
+<div class="modal" id="photoModal" onclick="closePhoto()">
+  <button class="modal-close" onclick="closePhoto()"><svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
+  <img class="modal-img" id="photoModalImg" src="" alt="">
+</div>
+
+<!-- FORM LAPOR -->
+<div class="overlay" id="formOverlay">
+  <div class="ocard">
+    <div class="otitle">Lapor Barang</div>
+    <div class="osub">Isi dengan lengkap agar mudah ditemukan</div>
+    <div class="type-row">
+      <div class="type-btn al" id="btnLost" onclick="setType('Hilang')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="#C62828"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+        <div class="type-btn-label">Barang Hilang</div>
+      </div>
+      <div class="type-btn" id="btnFound" onclick="setType('Ditemukan')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="#9E9E9E" id="foundIcon"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+        <div class="type-btn-label">Barang Ditemukan</div>
+      </div>
+    </div>
+    <div class="fg"><label class="fl">Nama Barang</label><input class="fi" id="fNama" placeholder="Contoh: Dompet kulit coklat"></div>
+    <div class="fg2">
+      <div class="fg"><label class="fl">Lokasi</label><input class="fi" id="fLokasi" placeholder="Contoh: Kantin lt.2"></div>
+      <div class="fg"><label class="fl">Tanggal</label><input class="fi" id="fTanggal" type="date"></div>
+    </div>
+    <div class="fg"><label class="fl">Deskripsi</label><textarea class="fta" id="fDesc" placeholder="Warna, merek, isi, ciri khas..."></textarea></div>
+    <div class="fg">
+      <label class="fl">Foto Barang</label>
+      <div class="upload-area" onclick="document.getElementById('fFoto').click()">
+        <input type="file" id="fFoto" accept="image/*" onchange="previewFoto(this)">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="#9E9E9E"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+        <div id="uploadText" style="font-size:12px;color:#9E9E9E;margin-top:5px">Klik untuk upload foto</div>
+        <img id="fotoPreview" class="upload-prev" style="display:none">
+      </div>
+    </div>
+    <div class="fg2">
+      <div class="fg"><label class="fl">Nama Pelapor</label><input class="fi" id="fNamaPelapor" placeholder="Nama kamu"></div>
+      <div class="fg"><label class="fl">WA / Email</label><input class="fi" id="fKontak" placeholder="08xxx / email@gmail.com"></div>
+    </div>
+    <button class="btn-sub" id="btnSubmit" onclick="submitForm()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+      Publikasikan Laporan
+    </button>
+    <button class="btn-can" onclick="closeForm()">Batal</button>
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="overlay" id="editOverlay">
+  <div class="ocard">
+    <div class="otitle">Edit Laporan</div>
+    <div class="osub">Ubah informasi laporan barang</div>
+    <input type="hidden" id="editId">
+    <div class="fg"><label class="fl">Status</label><select class="fse" id="eStatus"><option value="Hilang">Hilang</option><option value="Ditemukan">Ditemukan</option><option value="Selesai">Selesai</option></select></div>
+    <div class="fg"><label class="fl">Nama Barang</label><input class="fi" id="eNama" placeholder="Nama barang"></div>
+    <div class="fg2">
+      <div class="fg"><label class="fl">Lokasi</label><input class="fi" id="eLokasi" placeholder="Lokasi kejadian"></div>
+      <div class="fg"><label class="fl">Tanggal</label><input class="fi" id="eTanggal" type="date"></div>
+    </div>
+    <div class="fg"><label class="fl">Deskripsi</label><textarea class="fta" id="eDesc" placeholder="Deskripsi barang"></textarea></div>
+    <div class="fg2">
+      <div class="fg"><label class="fl">Nama Pelapor</label><input class="fi" id="eNamaPelapor" placeholder="Nama pelapor"></div>
+      <div class="fg"><label class="fl">WA / Email</label><input class="fi" id="eKontak" placeholder="Kontak pelapor"></div>
+    </div>
+    <button class="btn-sub" id="btnEdit" onclick="submitEdit()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>
+      Simpan Perubahan
+    </button>
+    <button class="btn-can" onclick="closeEdit()">Batal</button>
+  </div>
+</div>
+
+<!-- SELESAI MODAL -->
+<div class="overlay" id="selesaiOverlay">
+  <div class="ocard" style="max-width:380px">
+    <div class="otitle">Konfirmasi Selesai</div>
+    <div class="osub">Barang sudah kembali ke pemiliknya?</div>
+    <input type="hidden" id="selesaiId">
+    <div class="fg"><label class="fl">Nama Barang</label><input class="fi" id="selesaiNama" disabled></div>
+    <button class="btn-sub" id="btnSelesai" onclick="konfirmasiSelesai()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+      Ya, Konfirmasi Selesai
+    </button>
+    <button class="btn-can" onclick="closeSelesai()">Batal</button>
+  </div>
+</div>
+
+<!-- ADMIN LOGIN -->
+<div class="overlay" id="adminLoginOverlay">
+  <div class="ocard" style="max-width:340px">
+    <div class="otitle">Login Admin</div>
+    <div class="osub">Masukkan password untuk masuk ke dashboard admin</div>
+    <div class="fg"><label class="fl">Password</label><input class="fi" id="adminPassInput" type="password" placeholder="Password admin" onkeydown="if(event.key==='Enter')doAdminLogin()"></div>
+    <button class="btn-sub" onclick="doAdminLogin()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+      Masuk ke Dashboard Admin
+    </button>
+    <button class="btn-can" onclick="closeAdminLogin()">Batal</button>
+  </div>
+</div>
+
+<!-- HUBUNGI ADMIN OVERLAY -->
+<div class="overlay" id="hubungiOverlay">
+  <div class="ocard" style="max-width:440px">
+    <div class="otitle">Hubungi Admin</div>
+    <div class="osub">Kirim pesan penting ke admin — misal salah tulis, minta koreksi, atau pertanyaan lainnya</div>
+    <div id="pesanBalasan" style="display:none;background:var(--green2);border:1px solid #A5D6A7;border-radius:var(--radius);padding:12px;margin-bottom:12px;font-size:13px;color:var(--green)">
+      <div style="font-weight:600;margin-bottom:4px">Balasan Admin:</div>
+      <div id="pesanBalasanText"></div>
+    </div>
+    <div class="fg"><label class="fl">Nama Kamu</label><input class="fi" id="chatNama" placeholder="Nama pelapor"></div>
+    <div class="fg"><label class="fl">Pesan</label><textarea class="fta" id="chatMsg" placeholder="Tulis pesan kamu di sini... Contoh: Saya salah tulis nama barang, mohon dikoreksi dari 'Dompey' menjadi 'Dompet'" style="min-height:100px"></textarea></div>
+    <button class="btn-sub" id="btnKirimPesan" onclick="kirimPesan()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+      Kirim Pesan ke Admin
+    </button>
+    <button class="btn-can" onclick="closeHubungi()">Tutup</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SURL='https://atpqxylvmuvembtlqtrc.supabase.co';
+const SKEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF0cHF4eWx2bXV2ZW1idGxxdHJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxODQ2NjYsImV4cCI6MjA5MTc2MDY2Nn0.RsWkgI35XkfTzzaNn5drOzCgTMTWnG2bnVFTZC0FjCk';
+const H={'apikey':SKEY,'Authorization':'Bearer '+SKEY,'Content-Type':'application/json'};
+let allItems=[],allPesan=[],pillFilter='',selType='Hilang';
+let adminPass=localStorage.getItem('adminPass')||'admin123';
+
+function iconFor(n){
+  const base='<svg width="28" height="28" viewBox="0 0 24 24" fill="#9B5CF6">';
+  if(!n)return base+'<path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4z"/></svg>';
+  n=n.toLowerCase();
+  if(n.includes('phone')||n.includes('iphone')||n.includes('hp')||n.includes('samsung')||n.includes('oppo'))return base+'<path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z"/></svg>';
+  if(n.includes('dompet')||n.includes('ktp')||n.includes('atm'))return base+'<path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>';
+  if(n.includes('kunci'))return base+'<path d="M12.65 10C11.83 7.67 9.61 6 7 6c-3.31 0-6 2.69-6 6s2.69 6 6 6c2.61 0 4.83-1.67 5.65-4H17v4h4v-4h2v-4H12.65zM7 14c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg>';
+  if(n.includes('tas')||n.includes('ransel'))return base+'<path d="M14 6V4h-4v2H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-6zm-2-1c.55 0 1 .45 1 1h-2c0-.55.45-1 1-1z"/></svg>';
+  return base+'<path d="M20 6h-2.18c.07-.44.18-.88.18-1.34C18 2.54 15.42 1 13.5 1c-1.74 0-3.41.81-4.5 2.09C7.91 1.81 6.24 1 4.5 1 2.58 1 0 2.54 0 4.66c0 .46.09.9.18 1.34H0C-1.1 6-2 6.9-2 8v12c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>';
+}
+
+function gmailLink(e,n,i,l){const s=`[Lost and Found] Tentang: ${i}`;const b=`Halo ${n},\n\nSaya melihat laporan tentang "${i}" di ${l}.\n\nSaya ingin menginformasikan lebih lanjut.\n\nTerima kasih`;return`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(e)}&su=${encodeURIComponent(s)}&body=${encodeURIComponent(b)}`;}
+function waLink(w,n,i){const m=`Halo ${n}, saya melihat laporan tentang "${i}" di Lost and Found. Boleh saya tanya lebih lanjut?`;return`https://wa.me/${String(w).replace(/[^0-9]/g,'')}?text=${encodeURIComponent(m)}`;}
+
+async function loadData(){
+  document.getElementById('grid').innerHTML=`<div class="loading"><div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div><div>Memuat data...</div></div>`;
+  try{
+    const res=await fetch(`${SURL}/rest/v1/laporan?select=*&order=created_at.desc`,{headers:H});
+    allItems=await res.json();
+    updateStats();filterItems();
+    renderAdminTable();
+  }catch(e){document.getElementById('grid').innerHTML=`<div class="empty">Gagal memuat data</div>`;}
+}
+
+function updateStats(){
+  const l=allItems.filter(i=>i.status==='Hilang').length;
+  const f=allItems.filter(i=>i.status==='Ditemukan').length;
+  const d=allItems.filter(i=>i.status==='Selesai').length;
+  document.getElementById('cLost').textContent=l;
+  document.getElementById('cFound').textContent=f;
+  document.getElementById('cDone').textContent=d;
+  document.getElementById('aLost').textContent=l;
+  document.getElementById('aFound').textContent=f;
+  document.getElementById('aSelesai').textContent=d;
+}
+
+function filterItems(){
+  const q=document.getElementById('searchInput').value.toLowerCase();
+  const f=allItems.filter(i=>{
+    const mQ=!q||(i.nama_barang||'').toLowerCase().includes(q)||(i.lokasi||'').toLowerCase().includes(q)||(i.deskripsi||'').toLowerCase().includes(q);
+    return mQ&&(!pillFilter||i.status===pillFilter);
+  });
+  document.getElementById('countText').textContent=`${f.length} laporan ditemukan`;
+  renderItems(f);
+}
+
+function filterPill(el,val){
+  document.querySelectorAll('.pill').forEach(p=>p.classList.remove('on'));
+  el.classList.add('on');pillFilter=val;filterItems();
+}
+
+function renderItems(items){
+  const grid=document.getElementById('grid');
+  if(!items.length){grid.innerHTML=`<div class="empty"><svg width="44" height="44" viewBox="0 0 24 24" fill="#BDBDBD" style="margin:0 auto 10px;display:block"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>Tidak ada laporan</div>`;return;}
+  const sc={'Hilang':'lost','Ditemukan':'found','Selesai':'selesai'};
+  const dot='<svg width="7" height="7" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="8"/></svg>';
+  const locI='<svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>';
+  const perI='<svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>';
+  grid.innerHTML=items.map(i=>{
+    const cls=sc[i.status]||'lost';
+    const tgl=i.tanggal?new Date(i.tanggal).toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'}):'';
+    const hasWa=i.kontak&&i.kontak.replace(/[^0-9]/g,'').length>6;
+    const hasEmail=i.kontak&&i.kontak.includes('@');
+    const imgHtml=i.foto_url?`<img class="card-img" src="${i.foto_url}" alt="${i.nama_barang}" onclick="openPhoto('${i.foto_url}')" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`+`<div class="card-no-img" style="display:none">${iconFor(i.nama_barang)}</div>`:`<div class="card-no-img">${iconFor(i.nama_barang)}</div>`;
+    return`<div class="card">${imgHtml}<div class="card-stripe ${cls}"></div><div class="card-body"><div class="card-top"><span class="badge ${cls}">${dot} ${i.status}</span><span class="card-date">${tgl}</span></div><div class="card-name">${i.nama_barang||'-'}</div><div class="card-desc">${(i.deskripsi||'').slice(0,90)}${(i.deskripsi||'').length>90?'...':''}</div><div class="card-loc">${locI} ${i.lokasi||'-'}</div><div class="card-contact">${perI} ${i.nama_pelapor||'-'}</div><div class="card-actions">${hasEmail?`<a class="btn-email" href="${gmailLink(i.kontak,i.nama_pelapor,i.nama_barang,i.lokasi)}" target="_blank"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg> Email</a>`:''}${hasWa?`<a class="btn-wa" href="${waLink(i.kontak,i.nama_pelapor,i.nama_barang)}" target="_blank"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg> WA</a>`:''}${cls!=='selesai'?`<button class="btn-done" onclick="openSelesai('${i.id}','${(i.nama_barang||'').replace(/'/g,"\\'")}')"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Lapor Selesai</button>`:''}</div></div></div>`;
+  }).join('');
+}
+
+function renderAdminTable(){
+  const q=(document.getElementById('adminSearch').value||'').toLowerCase();
+  const f=document.getElementById('adminFilter').value;
+  const filtered=allItems.filter(i=>(!f||i.status===f)&&(!q||(i.nama_barang||'').toLowerCase().includes(q)||(i.lokasi||'').toLowerCase().includes(q)||(i.nama_pelapor||'').toLowerCase().includes(q)));
+  const sc={'Hilang':'lost','Ditemukan':'found','Selesai':'selesai'};
+  const editBtn=id=>`<button class="btn-edit-sm" onclick="openEdit('${id}')"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg> Edit</button>`;
+  const delBtn=id=>`<button class="btn-del-sm" onclick="hapusItem('${id}')"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg> Hapus</button>`;
+  const noData=`<div style="text-align:center;padding:30px;color:var(--text3)">Tidak ada laporan</div>`;
+
+  // Desktop table
+  const tbody=document.getElementById('adminTableBody');
+  if(tbody){
+    if(!filtered.length){tbody.innerHTML=`<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--text3)">Tidak ada data</td></tr>`;}
+    else{tbody.innerHTML=filtered.map(i=>{
+      const cls=sc[i.status]||'lost';
+      const tgl=i.tanggal?new Date(i.tanggal).toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'}):'';
+      const img=i.foto_url?`<img class="tbl-img" src="${i.foto_url}" onclick="openPhoto('${i.foto_url}')" onerror="this.src=''">`:`<div class="tbl-img-placeholder">${iconFor(i.nama_barang)}</div>`;
+      return`<tr><td>${img}</td><td><div class="tbl-name">${i.nama_barang||'-'}</div><div class="tbl-sub">${(i.deskripsi||'').slice(0,40)}...</div></td><td><span class="badge ${cls}">${i.status}</span></td><td><div class="tbl-sub">${i.lokasi||'-'}</div></td><td><div class="tbl-sub">${i.nama_pelapor||'-'}</div></td><td><div class="tbl-sub">${tgl}</div></td><td><div class="tbl-actions">${editBtn(i.id)}${delBtn(i.id)}</div></td></tr>`;
+    }).join('');}
+  }
+
+  // Mobile cards
+  const cardList=document.getElementById('adminCardList');
+  if(cardList){
+    if(!filtered.length){cardList.innerHTML=noData;}
+    else{cardList.innerHTML=filtered.map(i=>{
+      const cls=sc[i.status]||'lost';
+      const tgl=i.tanggal?new Date(i.tanggal).toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'}):'';
+      const img=i.foto_url?`<img class="admin-card-img" src="${i.foto_url}" onclick="openPhoto('${i.foto_url}')" onerror="this.src=''">`:`<div class="admin-card-img-ph">${iconFor(i.nama_barang)}</div>`;
+      return`<div class="admin-card-item">
+        ${img}
+        <div class="admin-card-info">
+          <div class="admin-card-name">${i.nama_barang||'-'}</div>
+          <span class="badge ${cls}" style="display:inline-flex;margin-bottom:4px">${i.status}</span>
+          <div class="admin-card-sub">📍 ${i.lokasi||'-'}</div>
+          <div class="admin-card-sub">👤 ${i.nama_pelapor||'-'}</div>
+          <div class="admin-card-sub">${tgl}</div>
+          <div class="admin-card-actions" style="margin-top:6px">${editBtn(i.id)}${delBtn(i.id)}</div>
+        </div>
+      </div>`;
+    }).join('');}
+  }
+}
+
+function switchAdminTab(tab){
+  ['laporan','pesan','settings'].forEach(t=>{
+    document.getElementById('tab'+t.charAt(0).toUpperCase()+t.slice(1)+'Content').style.display=tab===t?'block':'none';
+    const btn=document.getElementById('tab'+t.charAt(0).toUpperCase()+t.slice(1));
+    if(btn)btn.classList.toggle('on',tab===t);
+  });
+  if(tab==='pesan'){renderAdminPesan();markPesanRead();}
+  if(tab==='laporan'){renderAdminTable();}
+}
+
+function openPhoto(src){document.getElementById('photoModalImg').src=src;document.getElementById('photoModal').classList.add('show');}
+function closePhoto(){document.getElementById('photoModal').classList.remove('show');}
+function openForm(){document.getElementById('formOverlay').classList.add('show');document.getElementById('fTanggal').value=new Date().toISOString().split('T')[0];}
+function closeForm(){document.getElementById('formOverlay').classList.remove('show');}
+function setType(t){selType=t;document.getElementById('btnLost').className='type-btn'+(t==='Hilang'?' al':'');document.getElementById('btnFound').className='type-btn'+(t==='Ditemukan'?' af':'');document.getElementById('foundIcon').setAttribute('fill',t==='Ditemukan'?'#2E7D32':'#9E9E9E');}
+function previewFoto(input){if(input.files&&input.files[0]){const r=new FileReader();r.onload=e=>{const p=document.getElementById('fotoPreview');p.src=e.target.result;p.style.display='block';document.getElementById('uploadText').textContent='Foto dipilih';};r.readAsDataURL(input.files[0]);}}
+
+async function uploadFoto(file){
+  const ext=file.name.split('.').pop();const name=`foto_${Date.now()}.${ext}`;
+  const res=await fetch(`${SURL}/storage/v1/object/foto-barang/${name}`,{method:'POST',headers:{'apikey':SKEY,'Authorization':'Bearer '+SKEY,'Content-Type':file.type},body:file});
+  if(!res.ok)throw new Error('Gagal upload foto');
+  return`${SURL}/storage/v1/object/public/foto-barang/${name}`;
+}
+
+async function submitForm(){
+  const nama=document.getElementById('fNama').value.trim(),lokasi=document.getElementById('fLokasi').value.trim(),desc=document.getElementById('fDesc').value.trim(),pelapor=document.getElementById('fNamaPelapor').value.trim(),kontak=document.getElementById('fKontak').value.trim(),tanggal=document.getElementById('fTanggal').value;
+  if(!nama||!lokasi||!desc||!pelapor||!kontak){showToast('Mohon isi semua kolom wajib');return;}
+  const btn=document.getElementById('btnSubmit');btn.disabled=true;btn.innerHTML='<span class="spinner"></span> Menyimpan...';
+  try{
+    let foto_url=null;const ff=document.getElementById('fFoto').files[0];if(ff)foto_url=await uploadFoto(ff);
+    const res=await fetch(`${SURL}/rest/v1/laporan`,{method:'POST',headers:{...H,'Prefer':'return=minimal'},body:JSON.stringify({status:selType,nama_barang:nama,lokasi,tanggal,deskripsi:desc,foto_url,nama_pelapor:pelapor,kontak,status_kembali:'Aktif'})});
+    if(!res.ok)throw new Error('Gagal menyimpan');
+    showToast('Laporan berhasil dipublikasikan');closeForm();
+    ['fNama','fLokasi','fDesc','fNamaPelapor','fKontak'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('fotoPreview').style.display='none';document.getElementById('uploadText').textContent='Klik untuk upload foto';document.getElementById('fFoto').value='';
+    loadData();
+  }catch(e){showToast('Error: '+e.message);}
+  btn.disabled=false;btn.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg> Publikasikan Laporan';
+}
+
+function openSelesai(id,nama){document.getElementById('selesaiId').value=id;document.getElementById('selesaiNama').value=nama;document.getElementById('selesaiOverlay').classList.add('show');}
+function closeSelesai(){document.getElementById('selesaiOverlay').classList.remove('show');}
+async function konfirmasiSelesai(){
+  const id=document.getElementById('selesaiId').value;const btn=document.getElementById('btnSelesai');btn.disabled=true;btn.innerHTML='<span class="spinner"></span>';
+  try{await fetch(`${SURL}/rest/v1/laporan?id=eq.${id}`,{method:'PATCH',headers:{...H,'Prefer':'return=minimal'},body:JSON.stringify({status:'Selesai',status_kembali:'Kembali'})});showToast('Status berubah jadi Selesai');closeSelesai();loadData();}catch(e){showToast('Error: '+e.message);}
+  btn.disabled=false;btn.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Ya, Konfirmasi Selesai';
+}
+
+function openEdit(id){
+  const item=allItems.find(i=>i.id===id);if(!item)return;
+  document.getElementById('editId').value=id;document.getElementById('eNama').value=item.nama_barang||'';document.getElementById('eLokasi').value=item.lokasi||'';document.getElementById('eDesc').value=item.deskripsi||'';document.getElementById('eNamaPelapor').value=item.nama_pelapor||'';document.getElementById('eKontak').value=item.kontak||'';document.getElementById('eTanggal').value=item.tanggal||'';document.getElementById('eStatus').value=item.status||'Hilang';
+  document.getElementById('editOverlay').classList.add('show');
+}
+function closeEdit(){document.getElementById('editOverlay').classList.remove('show');}
+async function submitEdit(){
+  const id=document.getElementById('editId').value,nama=document.getElementById('eNama').value.trim(),lokasi=document.getElementById('eLokasi').value.trim();
+  if(!nama||!lokasi){showToast('Mohon isi nama dan lokasi');return;}
+  const btn=document.getElementById('btnEdit');btn.disabled=true;btn.innerHTML='<span class="spinner"></span> Menyimpan...';
+  try{
+    const res=await fetch(`${SURL}/rest/v1/laporan?id=eq.${id}`,{method:'PATCH',headers:{...H,'Prefer':'return=minimal'},body:JSON.stringify({nama_barang:nama,lokasi,deskripsi:document.getElementById('eDesc').value.trim(),nama_pelapor:document.getElementById('eNamaPelapor').value.trim(),kontak:document.getElementById('eKontak').value.trim(),tanggal:document.getElementById('eTanggal').value,status:document.getElementById('eStatus').value})});
+    if(!res.ok)throw new Error('Gagal update');showToast('Laporan berhasil diupdate');closeEdit();loadData();
+  }catch(e){showToast('Error: '+e.message);}
+  btn.disabled=false;btn.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg> Simpan Perubahan';
+}
+
+async function hapusItem(id){if(!confirm('Hapus laporan ini?'))return;try{await fetch(`${SURL}/rest/v1/laporan?id=eq.${id}`,{method:'DELETE',headers:H});showToast('Laporan dihapus');loadData();}catch(e){showToast('Gagal hapus');}}
+async function hapusSelesai(){if(!confirm('Hapus semua laporan Selesai?'))return;try{await fetch(`${SURL}/rest/v1/laporan?status=eq.Selesai`,{method:'DELETE',headers:H});showToast('Semua laporan Selesai dihapus');loadData();}catch(e){showToast('Gagal hapus');}}
+
+function openAdminLogin(){document.getElementById('adminLoginOverlay').classList.add('show');document.getElementById('adminPassInput').value='';}
+function closeAdminLogin(){document.getElementById('adminLoginOverlay').classList.remove('show');}
+function doAdminLogin(){
+  if(document.getElementById('adminPassInput').value===adminPass){
+    sessionStorage.setItem('isAdmin','1');
+    closeAdminLogin();
+    showAdminView();
+  }else{showToast('Password salah!');}
+}
+function showAdminView(){
+  document.getElementById('publicView').style.display='none';
+  document.getElementById('adminView').style.display='block';
+  loadData();loadPesan();
+  setTimeout(renderAdminTable,1000);
+}
+function logoutAdmin(){
+  sessionStorage.removeItem('isAdmin');
+  document.getElementById('adminView').style.display='none';
+  document.getElementById('publicView').style.display='block';
+  showToast('Keluar dari mode admin');
+}
+
+function doChangePass(){
+  const lama=document.getElementById('passLama').value,baru=document.getElementById('passBaru').value,konfirm=document.getElementById('passKonfirm').value;
+  if(lama!==adminPass){showToast('Password lama salah!');return;}
+  if(baru.length<4){showToast('Password minimal 4 karakter!');return;}
+  if(baru!==konfirm){showToast('Konfirmasi tidak cocok!');return;}
+  adminPass=baru;localStorage.setItem('adminPass',baru);
+  ['passLama','passBaru','passKonfirm'].forEach(id=>document.getElementById(id).value='');
+  showToast('Password berhasil diganti!');
+}
+
+async function loadPesan(){
+  try{
+    const res=await fetch(`${SURL}/rest/v1/pesan?select=*&order=created_at.asc`,{headers:H});
+    allPesan=await res.json();
+    const unread=allPesan.filter(p=>!p.sudah_dibaca).length;
+    document.getElementById('aPesan').textContent=allPesan.length;
+    const badge=document.getElementById('chatBadge');
+    const pesanCount=document.getElementById('pesanCount');
+    if(unread>0){badge.style.display='flex';badge.textContent=unread;pesanCount.style.display='inline';pesanCount.textContent=unread;}
+    else{badge.style.display='none';pesanCount.style.display='none';}
+
+  }catch(e){}
+}
+
+function renderChat(){
+  const el=document.getElementById('chatMessages');
+  if(!allPesan.length){el.innerHTML='<div style="text-align:center;color:var(--text3);font-size:13px;padding:20px">Belum ada pesan. Tulis pesan di bawah!</div>';return;}
+  el.innerHTML=allPesan.map(p=>{
+    const tgl=new Date(p.created_at).toLocaleString('id-ID',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+    return`<div><div style="font-size:10px;color:var(--text3);margin-bottom:3px">${p.nama}</div><div class="cbubble user">${p.pesan}<div class="cbubble-meta">${tgl}</div></div>${p.balasan?`<div class="cbubble reply" style="margin-top:4px"><div style="font-size:10px;color:var(--text3);margin-bottom:2px">Admin</div>${p.balasan}</div>`:''}</div>`;
+  }).join('');
+  el.scrollTop=el.scrollHeight;
+}
+
+function renderAdminPesan(){
+  const el=document.getElementById('adminMsgList');
+  if(!allPesan.length){el.innerHTML='<div class="empty">Belum ada pesan masuk</div>';return;}
+  el.innerHTML=[...allPesan].reverse().map(p=>{
+    const tgl=new Date(p.created_at).toLocaleString('id-ID',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+    return`<div class="msg-card"${!p.sudah_dibaca?' style="border-left:3px solid var(--purple)"':''}>
+      <div class="msg-header"><div class="msg-name">${!p.sudah_dibaca?'<span class="unread-dot" style="margin-right:6px"></span>':''} ${p.nama}</div><div class="msg-time">${tgl}</div></div>
+      <div class="msg-text">${p.pesan}</div>
+      ${p.balasan?`<div class="msg-reply-box"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M10 9V5l-7 7 7 7v-4.1c5 0 8.5 1.6 11 5.1-1-5-4-10-11-11z"/></svg> ${p.balasan}</div>`:''}
+      <input class="reply-input" id="reply_${p.id}" placeholder="Tulis balasan..." value="${p.balasan||''}">
+      <div class="msg-actions">
+        <button class="btn-reply" onclick="kirimBalasan('${p.id}')"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg> Balas</button>
+        <button class="btn-del-msg" onclick="hapusPesan('${p.id}')"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg> Hapus</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function markPesanRead(){
+  try{await fetch(`${SURL}/rest/v1/pesan?sudah_dibaca=eq.false`,{method:'PATCH',headers:{...H,'Prefer':'return=minimal'},body:JSON.stringify({sudah_dibaca:true})});document.getElementById('chatBadge').style.display='none';document.getElementById('pesanCount').style.display='none';}catch(e){}
+}
+
+async function kirimPesan(){
+  const nama=document.getElementById('chatNama').value.trim(),pesan=document.getElementById('chatMsg').value.trim();
+  if(!nama){showToast('Masukkan nama kamu');return;}if(!pesan){showToast('Tulis pesan dulu');return;}
+  const btn=document.getElementById('btnKirimPesan');btn.disabled=true;btn.innerHTML='<span class="spinner"></span> Mengirim...';
+  try{
+    await fetch(`${SURL}/rest/v1/pesan`,{method:'POST',headers:{...H,'Prefer':'return=minimal'},body:JSON.stringify({nama,pesan})});
+    document.getElementById('chatMsg').value='';
+    showToast('Pesan berhasil dikirim ke admin!');
+    loadPesan();
+    // Simpan ID pesan yang baru dikirim, lalu cek balasan untuk ID itu saja
+    setTimeout(async()=>{
+      const res=await fetch(`${SURL}/rest/v1/pesan?nama=eq.${encodeURIComponent(nama)}&order=created_at.desc&limit=1`,{headers:H});
+      const data=await res.json();
+      if(data.length){
+        window._lastPesanId=data[0].id;
+        if(data[0].balasan){
+          document.getElementById('pesanBalasan').style.display='block';
+          document.getElementById('pesanBalasanText').textContent=data[0].balasan;
+        } else {
+          document.getElementById('pesanBalasan').style.display='none';
+        }
+      }
+    },1000);
+  }catch(e){showToast('Gagal kirim pesan');}
+  btn.disabled=false;btn.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg> Kirim Pesan ke Admin';
+}
+
+async function kirimBalasan(id){
+  const balasan=document.getElementById('reply_'+id).value.trim();if(!balasan){showToast('Tulis balasan dulu');return;}
+  try{await fetch(`${SURL}/rest/v1/pesan?id=eq.${id}`,{method:'PATCH',headers:{...H,'Prefer':'return=minimal'},body:JSON.stringify({balasan})});showToast('Balasan terkirim!');await loadPesan();renderAdminPesan();}catch(e){showToast('Gagal balas');}
+}
+
+async function hapusPesan(id){
+  if(!confirm('Hapus pesan ini?'))return;
+  try{
+    const res=await fetch(`${SURL}/rest/v1/pesan?id=eq.${id}`,{
+      method:'DELETE',
+      headers:{...H,'Prefer':'return=minimal'}
+    });
+    if(res.ok){showToast('Pesan dihapus');await loadPesan();renderAdminPesan();}
+    else{const err=await res.text();showToast('Gagal: '+err);}
+  }catch(e){showToast('Gagal hapus: '+e.message);}
+}
+
+async function hapusSemuaPesan(){
+  if(!confirm('Hapus semua pesan?'))return;
+  try{
+    const res=await fetch(`${SURL}/rest/v1/pesan?id=neq.00000000-0000-0000-0000-000000000000`,{
+      method:'DELETE',
+      headers:{...H,'Prefer':'return=minimal'}
+    });
+    if(res.ok){showToast('Semua pesan dihapus');await loadPesan();renderAdminPesan();}
+    else{const err=await res.text();showToast('Gagal: '+err);}
+  }catch(e){showToast('Gagal hapus: '+e.message);}
+}
+
+function openHubungi(){
+  document.getElementById('hubungiOverlay').classList.add('show');
+  document.getElementById('pesanBalasan').style.display='none';
+  document.getElementById('chatMsg').value='';
+}
+function closeHubungi(){document.getElementById('hubungiOverlay').classList.remove('show');}
+
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
+
+loadData();loadPesan();
+setInterval(()=>{loadData();loadPesan();},30000);
+if(sessionStorage.getItem('isAdmin')==='1'){showAdminView();}
+</script>
+</body>
+</html>
